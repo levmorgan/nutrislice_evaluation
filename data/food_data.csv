@@ -1,0 +1,21 @@
+name	id	description	price	image_ref	import_name
+Sushi	1	Raw fish on rice	9.99	https://image_url	sushi
+Fried Rice	2	Rice with veggies	3.99	http://image_url2	null
+Chicken Nuggets	3	Breaded chicken squares	1.99	http://image_url3	null
+Salad	4	Salad with Croutons	4.99	http://image_url4	null
+Italian Sandwich	5	Sandwich with the meats	11.99	null	sandwich
+Cheeseburger	6	Burger with cheese	8.95	null	burger
+Impossible Burger	7	Meatless burger	11.5	null	impossible
+Croissant	8	Fancy and delicious bread	0.99	null	bread
+Cereal	9	null	1.99	null	null
+Yogurt	10	Yogurt with fruit bits	3.99	null	yogurt
+Pizza	11	pizza with pineapples	10	null	pizza
+Spinach Salad	12	Spinach and tomatoes	3.97	null	spinach
+Chicken Tikka	13	Indian style chicken	4.44	null	tikka
+Pad Thai	14	Thai style noodles	5.55	null	thai
+Ice Cream	15	Napoleon	1.99	null	null
+Frozen Custard	16	null	2.44	null	null
+Hotdog	17	null	0.5	null	null
+Drunken Noodles	17	Singaporean noodles	11	null	null
+Sesame Tofu	18	Tofu with sesame seeds	12	null	null
+Granola	19	pumpkin seeds, oats, etc.	3.1	null	null
