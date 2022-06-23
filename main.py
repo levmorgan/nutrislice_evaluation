@@ -12,7 +12,7 @@ def load_data():
     """Load the CSV files in the data directory.
 
     :raises FileNotFoundError: if any file is missing
-    :return: a dict of three Dataframes
+    :return: a dict of Dataframes
     """
     err_str = ("Couldn't find or read {}, make sure the app is being run " +
                "from the nutrislice_evaluation directory.")
@@ -22,7 +22,8 @@ def load_data():
 
     data_paths = [("food_data", "./data/food_data.csv"),
                   ("menu_data", "./data/menu_data.csv"),
-                  ("nutrition_data", "./data/nutrition_data.csv")]
+                  ("nutrition_data", "./data/nutrition_data.csv"),
+                  ("food_menu_data", "./data/food_menu_data.csv")]
 
     data = {}
 
@@ -41,12 +42,13 @@ def load_data():
 def process_data(data):
     """Process raw data from the CSVs into nice DataFrames
 
-    :param data: a dict of three lists
-    :return: a dict of three dataframes
+    :param data: a dict of lists
+    :return: a dict of dataframes
     """
     food_data, menu_data, nutrition_data = (data['food_data'],
                                             data['menu_data'],
                                             data['nutrition_data'])
+    food_menu_data = data['food_menu_data']
 
     # Disambiguate column names
     menu_data.columns = ["menu_id", "menu_name"]
@@ -54,14 +56,22 @@ def process_data(data):
                          'description', 'price', 'image_ref', 'import_name']
     nutrition_data.columns = ['nutrition_id',
                               'food_id', 'vitamin_d', 'vitamin_c', 'calcium']
+    food_menu_data.columns = ["food_menu_id", "food_id", "menu_id"]
 
     # Add nutrition data to food data, dropping nutrition_id
     food_data = food_data.merge(nutrition_data.iloc[:, 1:],
                                 left_on="food_id", right_on="food_id",
                                 how="outer")
 
+    # Add menu counts to food data
+    menu_counts = food_menu_data[["food_id"]].groupby(
+        "food_id").size().reset_index()
+    menu_counts.columns = ['food_id', 'menu_count']
+    food_data = food_data.merge(menu_counts, left_on="food_id",
+                                right_on="food_id", how="outer")
+
     return {"food_data": food_data, "menu_data": menu_data,
-            "nutrition_data": nutrition_data}
+            "nutrition_data": nutrition_data, "food_menu_data": food_menu_data}
 
 
 # Helper methods for APIs
@@ -91,8 +101,7 @@ def filter_foods(query, mode="namedesc"):
     pages_left = int((len(results)-1)/10.)
 
     # Format results object for endpoint
-    results = results[["food_id", "food_name", "price"]]
-    results["menu_count"] = 0
+    results = results[["food_id", "food_name", "price", "menu_count"]]
     results = results.sort_values(by="food_name")
     results = results.iloc[:min(len(results), 5), :]
     results = results.set_index("food_id")
