@@ -9,8 +9,13 @@ app = Flask(__name__)
 
 # Data loading methods
 def load_data():
+    """Load the CSV files in the data directory.
+
+    :raises FileNotFoundError: if any file is missing
+    :return: a dict of three Dataframes
+    """
     err_str = ("Couldn't find or read {}, make sure the app is being run " +
-               "from the Nutraslice Interview directory.")
+               "from the nutrislice_evaluation directory.")
 
     if not os.path.exists("./data"):
         raise FileNotFoundError(err_str.format("./data/"))
@@ -34,6 +39,11 @@ def load_data():
 
 
 def process_data(data):
+    """Process raw data from the CSVs into nice DataFrames
+
+    :param data: a dict of three lists
+    :return: a dict of three dataframes
+    """
     food_data, menu_data, nutrition_data = (data['food_data'],
                                             data['menu_data'],
                                             data['nutrition_data'])
@@ -56,6 +66,12 @@ def process_data(data):
 
 # Helper methods for APIs
 def filter_foods(query, mode="namedesc"):
+    """Filter foods by a string or nutrient
+
+    :param query: string or nutrient name
+    :param mode: "namedesc" or "nutrient"
+    :return: the dict the API needs
+    """
     # TODO: This should be a more general method that can match any field.
     data = get_data()
     food_data = data["food_data"]
@@ -86,6 +102,10 @@ def filter_foods(query, mode="namedesc"):
 
 
 def get_data():
+    """Get the data dict from the app context
+
+    :return: g.data
+    """
     if 'data' not in g:
         g.data = load_data()
 
@@ -95,6 +115,11 @@ def get_data():
 # API Endpoints
 @app.route('/search/<string:query>', methods=["GET"])
 def search(query):
+    """API endpoint to search foods by a string
+
+    :param query: a string to match in the food name or description
+    :return: results as JSON
+    """
     results = filter_foods(query, "namedesc")
 
     return jsonify(results)
@@ -102,6 +127,11 @@ def search(query):
 
 @app.route('/search_nutrients/<string:nutrient>', methods=["GET"])
 def search_nutrition(nutrient):
+    """API endpoint to search foods by a nutrient
+
+    :param nutrient: the nutrient foods must contain
+    :return: results as JSON
+    """
     results = filter_foods(nutrient, "nutrient")
 
     return jsonify(results)
